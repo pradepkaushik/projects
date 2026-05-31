@@ -2,10 +2,11 @@ terraform {
   required_version = ">= 1.0"
 
   backend "s3" {
-    bucket  = "yahoo123-596055752329-ap-south-1-an"
-    key     = "terraform/ec2/terraform.tfstate"
-    region  = "ap-south-1"
-    encrypt = true
+    bucket         = "yahoo123-596055752329-ap-south-1-an"
+    key            = "terraform/ec2/terraform.tfstate"
+    region         = "ap-south-1"
+    encrypt        = true
+    dynamodb_table = "terraform-state-lock"
   }
 
   required_providers {
@@ -34,12 +35,16 @@ data "aws_ami" "amazon_linux" {
 
 # EC2 Instance
 resource "aws_instance" "web_server" {
-  ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t3.micro"
-  key_name                    = "mumbai"
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t3.micro"
 
-  subnet_id                   = "subnet-0de7c3f57addfa12c"
-  vpc_security_group_ids      = ["sg-0013983e757f1c30a"]
+  key_name = "mumbai"
+
+  subnet_id = "subnet-0de7c3f57addfa12c"
+
+  vpc_security_group_ids = [
+    "sg-0013983e757f1c30a"
+  ]
 
   associate_public_ip_address = true
 
